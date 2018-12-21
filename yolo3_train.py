@@ -171,7 +171,7 @@ def data_generator(annotation_lines, batch_size, input_shape, anchors, num_class
         for b in range(batch_size):
             if i == 0:
                 np.random.shuffle(annotation_lines)
-            image, box = get_random_data(annotation_lines[i], input_shape, random=True)  # 获取图片和盒子
+            image, box = get_random_data(annotation_lines[i], input_shape, random=True)  # 获取图片和盒子，有max_box参数
             image_data.append(image)  # 添加图片
             box_data.append(box)  # 添加盒子
             i = (i + 1) % n

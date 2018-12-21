@@ -10,6 +10,14 @@ import numpy as np
 from matplotlib.colors import rgb_to_hsv, hsv_to_rgb
 
 
+
+def sort_box(box):
+    """
+    根据box的y值对box排序
+    """
+    box = sorted(box, key=lambda x: sum([x[1], x[3]]))
+    return list(box)
+
 def compose(*funcs):
     """Compose arbitrarily many functions, evaluated left to right.
 
@@ -51,7 +59,7 @@ def get_random_data(
     h, w = input_shape
     box = np.array([np.array(list(map(int, box.split(',')))) for box in line[1:]])
 
-    if not random:
+    if not random: #等比例变换为416，未填满部分用灰色填充
         # resize image
         scale = min(float(w) / float(iw), float(h) / float(ih))
         nw = int(iw * scale)
@@ -76,7 +84,7 @@ def get_random_data(
 
         return image_data, box_data
 
-    # resize image
+    # resize image，非等比例变换
     new_ar = w / h * rand(1 - jitter, 1 + jitter) / rand(1 - jitter, 1 + jitter)
     scale = rand(.25, 2.)
     if new_ar < 1:
