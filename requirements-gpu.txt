@@ -7,4 +7,5 @@ opencv-python==3.4.1.15
 configparser==3.5.0
 graphviz==0.8.4
 pydot==1.2.4
+pytorch==1.0.0
 

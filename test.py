@@ -9,13 +9,13 @@ from yolo3.utils import sort_box
 from crnn.crnn import crnn
 from multiprocessing import Process, Queue, Pool
 
-
-import tensorflow as tf
-from keras.backend.tensorflow_backend import set_session
-config = tf.ConfigProto()
-config.gpu_options.allow_growth = True
-config.gpu_options.per_process_gpu_memory_fraction = 0.3
-set_session(tf.Session(config=config))
+# 控制detection网络占用GPU的大小
+# import tensorflow as tf   
+# from keras.backend.tensorflow_backend import set_session
+# config = tf.ConfigProto()
+# config.gpu_options.allow_growth = True
+# config.gpu_options.per_process_gpu_memory_fraction = 0.3
+# set_session(tf.Session(config=config))
 
 def detect_img_test():
     yolo = YOLO()
@@ -41,11 +41,11 @@ def recognition_img(image_path):
     #通过多进程来混合使用pytorch和keras
     q = Queue()
 
-    # p = Process(target=detect_img, args=(image_path,q))
-    # p.start()
-    # p.join()
+    p = Process(target=detect_img, args=(image_path,q))
+    p.start()
+    p.join()
 
-    detect_img(image_path,q)
+    # detect_img(image_path,q)
 
     r_box = q.get()
     

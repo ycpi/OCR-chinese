@@ -29,8 +29,6 @@ class YOLO(object):
         self.model_path = yoloWeights  # 模型文件
         self.classes_path = yoloClasses  # 类别文件
 
-        # self.model_path = 'model_data/ep074-loss26.535-val_loss27.370.h5'  # 模型文件
-        # self.classes_path = 'configs/wider_classes.txt'  # 类别文件
 
         self.score = 0.15
         # self.iou = 0.45
@@ -144,7 +142,7 @@ class YOLO(object):
                 x1 * rx, y1 * ry, x2 * rx, y2 * ry, x3 * rx, y3 * ry, x4 * rx,
                 y4 * ry
             ])
-        out_boxes = np.array(newBox)
+        out_boxes = np.array(newBox)  #x1,x2,x3,x4
 
         if len(out_boxes[0])>4:
             out_boxes = out_boxes[:, [0, 1, 2, 5]] #测试用

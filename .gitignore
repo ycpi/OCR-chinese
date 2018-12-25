@@ -112,3 +112,8 @@ venv.bak/
 model_data/
 dataset/
 logs/
+
+# other
+.vscode/
+*.jpg
+*.png
