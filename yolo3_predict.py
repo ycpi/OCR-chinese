@@ -8,6 +8,7 @@ from keras.layers import Input
 from keras import backend as K
 from PIL import Image, ImageFont, ImageDraw
 import numpy as np
+import cv2
 from timeit import default_timer as timer
 import os
 import colorsys
@@ -142,10 +143,10 @@ class YOLO(object):
                 x1 * rx, y1 * ry, x2 * rx, y2 * ry, x3 * rx, y3 * ry, x4 * rx,
                 y4 * ry
             ])
-        out_boxes = np.array(newBox)  #x1,x2,x3,x4
+        out_boxes = np.array(newBox)  
 
-        if len(out_boxes[0])>4:
-            out_boxes = out_boxes[:, [0, 1, 2, 5]] #测试用
+        # if len(out_boxes[0])>4:
+        #     out_boxes = out_boxes[:, [0, 1, 2, 5]] #测试用
 
         print('Found {} boxes for {}'.format(len(out_boxes), 'img'))  # 检测出的框
 
@@ -153,59 +154,24 @@ class YOLO(object):
         thickness = (image.size[0] + image.size[1]) // 512  # 厚度
 
         r_image = image.copy()
+        tmp = np.array(r_image)
 
         for box in out_boxes:
-            draw = ImageDraw.Draw(r_image)  # 画图
+            x1, y1 = (box[0], box[1])
+            x2, y2 = (box[2], box[3])
+            x3, y3 = (box[4], box[5])
+            x4, y4 = (box[6], box[7]) 
 
-            left, top,  right, bottom = box
-            # top, left, bottom, right = box
-            top = max(0, np.floor(top + 0.5).astype('int32'))
-            left = max(0, np.floor(left + 0.5).astype('int32'))
-            bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
-            right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
+            c=(0,0,0) #color
 
-            for i in range(thickness):  # 画框
-                draw.rectangle(
-                    [left + i, top + i, right - i, bottom - i], outline=(0, 0, 0))
-            del draw
-
-        # font = ImageFont.truetype(font='font/FiraMono-Medium.otf',
-        #                           size=np.floor(3e-2 * image.size[1] + 0.5).astype('int32'))  # 字体
-        # for i, c in reversed(list(enumerate(out_classes))):
-        #     predicted_class = self.class_names[c]  # 类别
-        #     box = out_boxes[i]  # 框
-        #     score = out_scores[i]  # 执行度
-
-        #     label = '{} {:.2f}'.format(predicted_class, score)  # 标签
-        #     draw = ImageDraw.Draw(image)  # 画图
-        #     label_size = draw.textsize(label, font)  # 标签文字
-
-        #     top, left, bottom, right = box[0], box[1], box[2], box[5]
-        #     top = max(0, np.floor(top + 0.5).astype('int32'))
-        #     left = max(0, np.floor(left + 0.5).astype('int32'))
-        #     bottom = min(image.size[1], np.floor(bottom + 0.5).astype('int32'))
-        #     right = min(image.size[0], np.floor(right + 0.5).astype('int32'))
-        #     print(label, (left, top), (right, bottom))  # 边框
-
-        #     # if top - label_size[1] >= 0:  # 标签文字
-        #     #     text_origin = np.array([left, top - label_size[1]])
-        #     # else:
-        #     #     text_origin = np.array([left, top + 1])
-
-        #     # My kingdom for a good redistributable image drawing library.
-        #     for i in range(thickness):  # 画框
-        #         draw.rectangle(
-        #             [left + i, top + i, right - i, bottom - i],
-        #             outline=self.colors[c])
-        #     # draw.rectangle(  # 文字背景
-        #     #     [tuple(text_origin), tuple(text_origin + label_size)],
-        #     #     fill=self.colors[c])
-        #     # draw.text(text_origin, label, fill=(0, 0, 0), font=font)  # 文案
-        #     del draw
+            cv2.line(tmp,(int(x1),int(y1)),(int(x2),int(y2)),c,thickness)
+            cv2.line(tmp,(int(x2),int(y2)),(int(x3),int(y3)),c,thickness)
+            cv2.line(tmp,(int(x3),int(y3)),(int(x4),int(y4)),c,thickness)
+            cv2.line(tmp,(int(x4),int(y4)),(int(x1),int(y1)),c,thickness)
 
         end = timer()
         print(end - start)  # 检测执行时间
-        return r_image, out_boxes
+        return Image.fromarray(tmp), out_boxes
 
     def close_session(self):
         self.sess.close()
